@@ -22,22 +22,18 @@ def downloadImages(whichdata = 'cifar10', data_dir = './data'):
 
 
 def lab2rgb(imgs):
-    lab_img = np.transpose(imgs.numpy(), (0, 2, 3, 1))
-    rgb_img = np.zeros(lab_img.shape)
-    N = lab_img.shape[0]
-    # print(lab_img)
+    lab_imgs = imgs
+    rgb_imgs = lab_imgs
+    N = lab_imgs.shape[0]
+    # print(rgb_img.shape)
     for i in range(N): 
-        img = lab_img[i]
-        mean = np.array([0.5])
-        img = img/2
-        img += mean
+        img = lab_imgs[i]
+        img = np.transpose(img.numpy(), (1, 2, 0))
         img *= 255
-        img[:, :, 2] -= 128
-        img[:, :, 1] -= 128
-        img[:, :, 0] /= 2.55
+        img[ :, :, 2] -= 128
+        img[ :, :, 1] -= 128
+        img[ :, :, 0] /= 2.55
         img = cv2.cvtColor(img, cv2.COLOR_LAB2RGB)
-        img = img.astype(np.uint8)
-        rgb_img[i] = img
-    tensor_rgb_image = torch.from_numpy(np.transpose(rgb_img, (0, 3, 1, 2)))
-    # print(tensor_rgb_image)
-    return tensor_rgb_image
+        rgb_img = torch.from_numpy(np.transpose(img, (2, 0, 1)))*255
+        rgb_imgs[i] = rgb_img
+    return rgb_imgs

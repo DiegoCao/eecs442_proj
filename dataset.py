@@ -41,6 +41,22 @@ numpy_lab_images = []
 for image, label in trainset:
     rgb_images.append(image)
 
+# f1 = np.transpose(rgb_images[2].numpy(), (1, 2, 0))
+# f1 = cv2.cvtColor(f1, cv2.COLOR_RGB2LAB)
+# # print(f1)
+# f1[:, :, 0] *= 255 / 100
+# f1[:, :, 1] += 128
+# f1[:, :, 2] += 128
+# f1 /= 255
+# torch_f1 = torch.from_numpy(np.transpose(f1, (2, 0, 1)))
+# lab_f1 = np.transpose(torch_f1.numpy(), (1, 2, 0))
+# lab_f1 *= 255
+# lab_f1[ :, :, 2] -= 128
+# lab_f1[ :, :, 1] -= 128
+# lab_f1[ :, :, 0] /= 2.55
+# rgb_f1 = cv2.cvtColor(f1, cv2.COLOR_LAB2RGB)
+# cv2.imwrite("f1.png", rgb_f1*255)
+
 for rgb_image in rgb_images:
     numpy_rgb_image = np.transpose(rgb_image.numpy(), (1, 2, 0))
     numpy_lab_image = cv2.cvtColor(numpy_rgb_image, cv2.COLOR_RGB2LAB)
