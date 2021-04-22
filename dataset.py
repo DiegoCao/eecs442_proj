@@ -31,8 +31,8 @@ tensor_transform = transforms.ToTensor()
 trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                         download=True, transform=tensor_transform)
 
-classes = ('plane', 'car', 'bbird', 'cat',
-           'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+# classes = ('plane', 'car', 'bbird', 'cat',
+#            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
 #########################################################################
 # Transform the images to CieLAB color space by the use of OpenCV library.

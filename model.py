@@ -146,3 +146,19 @@ class Discriminator(nn.Module):
 # summary(encoder, input_size = (1, 32, 32))
 # decoder = Decoder(512, 256+256, 256, 4, 2, 1)
 # summary(decoder, input_size = [(512, 4, 4), (256, 8, 8)])
+
+def Cifar10Net(nn.Module):
+    def __init__(self, step, learning_rate, num_of_epochs):
+        super(Cifar10Net, self).__init__()
+
+        self.learning_rate = learning_rate
+        self.num_of_epochs = num_of_epochs
+        self.G = Generator()
+        self.D = Discriminator()
+
+        G_opt = optim.Adam(G.parameters(), lr = learning_rate, betas = (0.5, 0.999))
+        D_opt = optim.Adam(D.parameters(), lr = learning_rate, betas = (0.5, 0.999))
+
+        criterion = nn.BCELoss()
+        reg_criterion = nn.L1Loss()
+
