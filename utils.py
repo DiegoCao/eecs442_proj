@@ -5,6 +5,7 @@ import numpy as np
 import cv2
 
 import torchvision 
+
 def downloadImages(whichdata = 'cifar10', data_dir = './data'):
     if os.path.exists(data_dir) == False:
         os.makedirs(data_dir)

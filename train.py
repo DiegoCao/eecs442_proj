@@ -7,10 +7,14 @@ import torch.optim as optim
 import torchvision
 from torchsummary import summary
 from torch.utils.tensorboard import SummaryWriter
+import json
+
+with open("params.json", "r") as read_file:
+    params = json.load(read_file)
 
 
-learning_rate = 1e-4
-num_of_epochs = 2
+learning_rate = params["learning_rate"]
+num_of_epochs = params["num_of_epochs"]
 
 # load gpu
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -32,6 +36,9 @@ reg_criterion = nn.L1Loss()
 writer_real = SummaryWriter(f"logs/real")
 writer_fake = SummaryWriter(f"logs/fake")
 
+def saveModel(model, PATH):
+    
+    
 
 def train():
     step = 0
@@ -106,6 +113,7 @@ def train():
                 with torch.no_grad():
                     rgb_images_real = utils.lab2rgb(lab_images[:32].cpu())
                     rgb_images_fake = utils.lab2rgb(fake_lab_images[:32].cpu())
+                    
                     # print(fake_lab_images[3])
                     # print(rgb_images_fake[3])
                     img_grid_real = torchvision.utils.make_grid(rgb_images_real, normalize=True)

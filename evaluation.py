@@ -19,6 +19,41 @@ def cal_PSNR(true_img, fake_img):
     return PSNR
 
 
+def pixelwise_accuracy_rgb(true_img, fake_img, thresh):
+
+""" 
+    calculate the pixelwise accuracy for the rgb
+"""
+    diffR = torch.abs(torch.round(true_img[..., 0])- torch.round(fake_img[..., 0]))
+    diffG = torch.abs(torch.round(true_img[..., 1])- torch.round(fake_img[..., 1]))
+    diffB = torch.abs(torch.round(true_img[..., 2]), torch.round(fake_img[..., 2]))
+
+    predR = torch.less_equal(diffR, thresh).float()
+    predG = torch.less_equal(diffG, thresh).float()
+    predB = torch.less_equal(diffB, thresh).float()
+
+    pred = predR * predG * predB
+
+    return torch.mean(pred)
+
+def evaluate_batch(true_imgs, fake_imgs, type = "pixel_rgb", thresh = 255*0.05):
+"""
+    calculate the batch and return mean, normally the batch size is 32!
+
+"""
+    N = true_imgs.shape[0]
+    accu = []
+    for i in range(N):
+        accu.append(pixelwise_accuracy_rgb(true_imgs[i], fake_imgs[i], thresh))
+
+    return np.mean(accu)
+
+
+
+
+
+
+
 
 
 
