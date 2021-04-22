@@ -38,7 +38,7 @@ def pixelwise_accuracy_rgb(true_img, fake_img, thresh):
 
 def evaluate_batch(true_imgs, fake_imgs, type = "pixel_rgb", thresh = 255*0.05):
 """
-    calculate the batch and return mean, normally the batch size is 32!
+    calculate the batch and return mean, normally the batch size is
 
 """
     N = true_imgs.shape[0]

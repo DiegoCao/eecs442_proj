@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision
 from torchsummary import summary
+import evaluation
 from torch.utils.tensorboard import SummaryWriter
 import json
 
@@ -37,6 +38,11 @@ writer_real = SummaryWriter(f"logs/real")
 writer_fake = SummaryWriter(f"logs/fake")
 
 def saveModel(model, PATH):
+    if os.path.exists(PATH) == FALSE:
+        os.makedirs(PATH)
+    
+    torch.save(model.state_dict(), PATH)
+    
     
     
 
@@ -45,6 +51,7 @@ def train():
     g_lambda = 100
     smooth = 0.1
 
+    Running_accu = []
     # loop over the dataset multiple times.
     for epoch in range(num_of_epochs):
         # the generator and discriminator losses are summed for the entire epoch.
@@ -106,14 +113,17 @@ def train():
             d_running_loss += d_loss.item()
             g_running_loss += g_loss.item()
             # print(fake_lab_images[3])
-            if i % 50 == 0:
+            if i % 200 == 0:
                 print('[%d, %5d] d_loss: %.5f g_loss: %.5f' %(epoch + 1, i + 1, d_running_loss / 10, g_running_loss / 10))
                 d_running_loss = 0.0
                 g_running_loss = 0.0
                 with torch.no_grad():
                     rgb_images_real = utils.lab2rgb(lab_images[:32].cpu())
                     rgb_images_fake = utils.lab2rgb(fake_lab_images[:32].cpu())
-                    
+                    accu = evaluation.evaluate_batch(lab_imags[:32], fake_lab_images[:32])
+                    print('The accuracy with theresh %5: ', accu)
+                    Running_accu.append(accu)
+
                     # print(fake_lab_images[3])
                     # print(rgb_images_fake[3])
                     img_grid_real = torchvision.utils.make_grid(rgb_images_real, normalize=True)
