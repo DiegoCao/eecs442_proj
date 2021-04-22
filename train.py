@@ -45,7 +45,11 @@ def saveModel(model, PATH):
     
     
     
+import pickle
 
+def writeData(data, file):
+    with open(file, 'wb') as fp:
+        pickle.dump(data, fp)
 def train():
     step = 0
     g_lambda = 100
@@ -120,7 +124,7 @@ def train():
                 with torch.no_grad():
                     rgb_images_real = utils.lab2rgb(lab_images[:32].cpu())
                     rgb_images_fake = utils.lab2rgb(fake_lab_images[:32].cpu())
-                    accu = evaluation.evaluate_batch(lab_imags[:32], fake_lab_images[:32])
+                    accu = evaluation.evaluate_batch(lab_images[:32].cpu(), fake_lab_images[:32].cpu())
                     print('The accuracy with theresh %5: ', accu)
                     Running_accu.append(accu)
 
@@ -131,6 +135,10 @@ def train():
                     writer_real.add_image("Real", img_grid_real, global_step=step)
                     writer_fake.add_image("Fake", img_grid_fake, global_step=step)
                 step += 1
+    
+    writeData(Running_accu, 'accu.txt')
+    saveModel(G, './model')
+    saveModel(D, './model')
     pass
 
 if __name__ == "__main__":

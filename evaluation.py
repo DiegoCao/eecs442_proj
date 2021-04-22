@@ -1,5 +1,6 @@
 from math import log10, sqrt
 import numpy as np
+import torch
 
 def preprocess_img(img):
     img = img - img.min()
@@ -21,9 +22,9 @@ def cal_PSNR(true_img, fake_img):
 
 def pixelwise_accuracy_rgb(true_img, fake_img, thresh):
 
-""" 
+    """ 
     calculate the pixelwise accuracy for the rgb
-"""
+    """
     diffR = torch.abs(torch.round(true_img[..., 0])- torch.round(fake_img[..., 0]))
     diffG = torch.abs(torch.round(true_img[..., 1])- torch.round(fake_img[..., 1]))
     diffB = torch.abs(torch.round(true_img[..., 2]), torch.round(fake_img[..., 2]))
@@ -37,10 +38,10 @@ def pixelwise_accuracy_rgb(true_img, fake_img, thresh):
     return torch.mean(pred)
 
 def evaluate_batch(true_imgs, fake_imgs, type = "pixel_rgb", thresh = 255*0.05):
-"""
+    """
     calculate the batch and return mean, normally the batch size is
 
-"""
+    """
     N = true_imgs.shape[0]
     accu = []
     for i in range(N):
