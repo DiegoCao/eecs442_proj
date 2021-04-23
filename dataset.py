@@ -1,4 +1,4 @@
-# Create by Hangrui Cao, load dataset, pytorch version implementation of paper:
+# Create by Hangrui Cao and Ruiyu Li, load dataset, pytorch version implementation of paper:
 # Thanks to efforts by https://github.com/ImagingLab/Colorizing-with-GANs (Code in tensorflow, more complex version)
 
 # import os 
@@ -11,25 +11,33 @@
 #     def __init__(self, name, images):
 #         self.name = name
 #         self.images = images
-    
+
 #     def __len__(self):
 #         return len(self.images)
 
 
+import json
+
+import cv2
+import numpy as np
 import torch
 import torchvision
 import torchvision.transforms as transforms
 
-import cv2
-import numpy as np 
+with open("params.json", "r") as read_file:
+    params = json.load(read_file)
 
-########################################################################
-# The output of torchvision datasets are PILImage images of range [0, 1].
-# We transform them to Tensors.
-tensor_transform = transforms.ToTensor()
+if params["dataset"] == "flower":
+    tensor_transform = transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor()])
+    trainset = torchvision.datasets.ImageFolder(root='./flower_data/train', transform=tensor_transform)
+else:
+    ########################################################################
+    # The output of torchvision datasets are PILImage images of range [0, 1].
+    # We transform them to Tensors.
+    tensor_transform = transforms.ToTensor()
 
-trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
-                                        download=True, transform=tensor_transform)
+    trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
+                                            download=True, transform=tensor_transform)
 
 # classes = ('plane', 'car', 'bbird', 'cat',
 #            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
@@ -74,11 +82,13 @@ for numpy_lab_image in numpy_lab_images:
     torch_lab_image = torch.from_numpy(np.transpose(numpy_lab_image, (2, 0, 1)))
     lab_images.append(torch_lab_image)
 
+
 #######################################################################
 # Make a custom CieLAB dataset and a data loader that iterates over the
 # custom dataset with shuffling and a batch size of 128.
 class CieLABDataset(torch.utils.data.Dataset):
-    """CieLab dataset."""    
+    """CieLab dataset."""
+
     def __len__(self):
         return len(lab_images)
 
@@ -86,10 +96,7 @@ class CieLABDataset(torch.utils.data.Dataset):
         img = lab_images[index]
         return img
 
+
 cielab_dataset = CieLABDataset()
 cielab_loader = torch.utils.data.DataLoader(cielab_dataset, batch_size=128,
-                  shuffle=True, num_workers=2)
-        
-
-    
-    
+                                            shuffle=True, num_workers=2)
