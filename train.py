@@ -5,6 +5,7 @@ import dataset
 import torch.nn as nn 
 import torch.optim as optim
 import torchvision
+import os 
 from torchsummary import summary
 import evaluation
 from torch.utils.tensorboard import SummaryWriter
@@ -124,7 +125,7 @@ def train():
                 with torch.no_grad():
                     rgb_images_real = utils.lab2rgb(lab_images[:32].cpu())
                     rgb_images_fake = utils.lab2rgb(fake_lab_images[:32].cpu())
-                    accu = evaluation.evaluate_batch(lab_images[:32].cpu(), fake_lab_images[:32].cpu())
+                    accu = evaluation.evaluate_batch(rgv_images_real, rgb_images_fake)
                     print('The accuracy with theresh %5: ', accu)
                     Running_accu.append(accu)
 

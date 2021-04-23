@@ -27,7 +27,7 @@ def pixelwise_accuracy_rgb(true_img, fake_img, thresh):
     """
     diffR = torch.abs(torch.round(true_img[..., 0])- torch.round(fake_img[..., 0]))
     diffG = torch.abs(torch.round(true_img[..., 1])- torch.round(fake_img[..., 1]))
-    diffB = torch.abs(torch.round(true_img[..., 2]), torch.round(fake_img[..., 2]))
+    diffB = torch.abs(torch.round(true_img[..., 2])- torch.round(fake_img[..., 2]))
 
     predR = torch.less_equal(diffR, thresh).float()
     predG = torch.less_equal(diffG, thresh).float()
