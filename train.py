@@ -122,9 +122,10 @@ def train():
             d_running_loss += d_loss.item()
             g_running_loss += g_loss.item()
             # print(fake_lab_images[3])
-            if i % 200 == 0:
+            mod_const = 200
+            if i % mod_const == 0:
                 print('[%d, %5d] d_loss: %.5f g_loss: %.5f' % (
-                    epoch + 1, i + 1, d_running_loss / 10, g_running_loss / 10))
+                    epoch + 1, i + 1, d_running_loss / mod_const, g_running_loss / mod_const))
                 d_running_loss = 0.0
                 g_running_loss = 0.0
                 with torch.no_grad():
@@ -142,7 +143,7 @@ def train():
                     writer_fake.add_image("Fake", img_grid_fake, global_step=step)
                 step += 1
 
-    writeData(Running_accu, 'accu.txt')
+    writeData(Running_accu, 'accu_correct.txt')
     saveModel(G, './model')
     saveModel(D, './model')
     pass
