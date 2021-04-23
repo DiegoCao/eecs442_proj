@@ -1,9 +1,7 @@
-import os 
-import numpy as np
-import torch 
-import torchvision
-from torchsummary import summary
+import torch
 import torch.nn as nn
+
+
 # create an abtract class base model
 class Encoder(nn.Module):
     def __init__(self, in_channels, out_channels, kernel, stride, padding, norm=True):
@@ -13,7 +11,7 @@ class Encoder(nn.Module):
         self.batchnorm = nn.BatchNorm2d(out_channels)
         self.leakyrelu = nn.LeakyReLU(0.2)
         # parameters!
-    
+
     def forward(self, x1):
         x1 = self.conv(x1)
         if self.Norm:
@@ -30,7 +28,7 @@ class Decoder(nn.Module):
         self.conv = nn.Conv2d(cat_channels, out_channels, kernel_size=3, stride=1, padding=1)
         self.batchnorm = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU(inplace=True)
-    
+
     def forward(self, x1, x2):
         x1 = self.upsample(x1)
         '''need to fix dim'''
@@ -59,26 +57,24 @@ class Generator(nn.Module):
         # self.decode_layers.append(Decoder(256, 128+128, 128, 4, 2, 1)) # [8, 8, 256] -> [16, 16, 128] -> [16, 16, 128]
         # self.decode_layers.append(Decoder(128, 64+64, 64, 4, 2, 1)) #[16, 16, 128] -> [32, 32, 64] -> [32, 32, 64]
 
-
         # THE STRIDE IS 1 here! No BatchNorm in first layer
-        self.encode_layer1 = Encoder(1, 64, 3, 1, 1, False) # [32, 32, 1] -> [32, 32, 64]
-        self.encode_layer2 = Encoder(64, 128, 4, 2, 1) # [32, 32, 64] -> [16, 16, 128]
-        self.encode_layer3 = Encoder(128, 256, 4, 2, 1) # [16, 16, 128] -> [8, 8, 256]
-        self.encode_layer4 = Encoder(256, 512, 4, 2, 1) # [8, 8, 256] -> [4, 4, 512]
-        self.encode_layer5 = Encoder(512, 512, 4, 2, 1) # [4, 4, 512] -> [2, 2, 512]
+        self.encode_layer1 = Encoder(1, 64, 3, 1, 1, False)  # [32, 32, 1] -> [32, 32, 64]
+        self.encode_layer2 = Encoder(64, 128, 4, 2, 1)  # [32, 32, 64] -> [16, 16, 128]
+        self.encode_layer3 = Encoder(128, 256, 4, 2, 1)  # [16, 16, 128] -> [8, 8, 256]
+        self.encode_layer4 = Encoder(256, 512, 4, 2, 1)  # [8, 8, 256] -> [4, 4, 512]
+        self.encode_layer5 = Encoder(512, 512, 4, 2, 1)  # [4, 4, 512] -> [2, 2, 512]
 
-        self.decode_layer1 = Decoder(512, 512+512, 512, 4, 2, 1) # [2, 2, 512] -> [4, 4, 512] -> [4, 4, 512]
-        self.decode_layer2 = Decoder(512, 256+256, 256, 4, 2, 1) #[4, 4, 512] -> [8, 8, 256] ->[8, 8, 256]
-        self.decode_layer3 = Decoder(256, 128+128, 128, 4, 2, 1) # [8, 8, 256] -> [16, 16, 128] -> [16, 16, 128]
-        self.decode_layer4 = Decoder(128, 64+64, 64, 4, 2, 1) #[16, 16, 128] -> [32, 32, 64] -> [32, 32, 64]
-        
+        self.decode_layer1 = Decoder(512, 512 + 512, 512, 4, 2, 1)  # [2, 2, 512] -> [4, 4, 512] -> [4, 4, 512]
+        self.decode_layer2 = Decoder(512, 256 + 256, 256, 4, 2, 1)  # [4, 4, 512] -> [8, 8, 256] ->[8, 8, 256]
+        self.decode_layer3 = Decoder(256, 128 + 128, 128, 4, 2, 1)  # [8, 8, 256] -> [16, 16, 128] -> [16, 16, 128]
+        self.decode_layer4 = Decoder(128, 64 + 64, 64, 4, 2, 1)  # [16, 16, 128] -> [32, 32, 64] -> [32, 32, 64]
+
         # last layer is 1 times 1 conv without batchNorm and with tanh activation fucntion
         # [32, 32, 64] -> [32, 32, 2]
-        self.last_layer = nn.Sequential (
-            nn.Conv2d(64, 2, kernel_size = 1), 
+        self.last_layer = nn.Sequential(
+            nn.Conv2d(64, 2, kernel_size=1),
             nn.Tanh()
         )
-
 
     def forward(self, input):
         # x1 = self.encode_layers[0](input)
@@ -105,17 +101,17 @@ class Generator(nn.Module):
         d1 = self.decode_layer4(d2, x1)
         out = self.last_layer(d1)
         return out
-        
+
 
 class Discriminator(nn.Module):
     def __init__(self):
         super(Discriminator, self).__init__()
         self.layer0 = Encoder(3, 64, 4, 2, 1, False)  # [32, 32, 2] -> [16, 16, 64]  First layer has no BatchNorm
-        self.layer1 = Encoder(64, 128, 4, 2, 1) # [16, 16, 64] -> [8, 8, 128]
-        self.layer2 = Encoder(128, 256, 4, 2, 1) # [8, 8, 128] -> [4, 4, 256]
-        self.layer3 = Encoder(256, 512, 3, 1, 1) # [4, 4, 256] -> [4, 4, 512]
+        self.layer1 = Encoder(64, 128, 4, 2, 1)  # [16, 16, 64] -> [8, 8, 128]
+        self.layer2 = Encoder(128, 256, 4, 2, 1)  # [8, 8, 128] -> [4, 4, 256]
+        self.layer3 = Encoder(256, 512, 3, 1, 1)  # [4, 4, 256] -> [4, 4, 512]
         self.last_layer = nn.Sequential(
-            nn.Conv2d(512, 1, kernel_size = 4 ), # stride = 1
+            nn.Conv2d(512, 1, kernel_size=4),  # stride = 1
             nn.Sigmoid()
         )
 
@@ -161,7 +157,7 @@ class F_Generator(nn.Module):
         self.decode_layer4 = Decoder(512, 256 + 256, 256, 4, 2, 1)  # [16, 16, 512] -> [32, 32, 256] ->[32, 32, 256]
         self.decode_layer5 = Decoder(256, 128 + 128, 128, 4, 2, 1)  # [32, 32, 256] -> [64, 64, 128] -> [64, 64, 128]
         self.decode_layer6 = Decoder(128, 64 + 64, 64, 4, 2, 1)  # [64, 64, 128] -> [128, 128, 64] -> [128, 128, 64]
-        self.decode_layer7 = Decoder(128, 64 + 64, 64, 4, 2, 1)  # [128, 128, 64] -> [256, 256, 64] -> [256, 256, 64]
+        self.decode_layer7 = Decoder(64, 64 + 64, 64, 4, 2, 1)  # [128, 128, 64] -> [256, 256, 64] -> [256, 256, 64]
 
         # last layer is 1 times 1 conv without batchNorm and with tanh activation fucntion
         # [256, 256, 64] -> [256, 256, 2]
@@ -223,7 +219,6 @@ class F_Discriminator(nn.Module):
         x = self.last_layer(x)
         return x
 
-
 # def initialize_weights(model):
 #     # Initializes weights according to the DCGAN paper
 #     for m in model.modules():
@@ -256,4 +251,3 @@ class F_Discriminator(nn.Module):
 
 #         criterion = nn.BCELoss()
 #         reg_criterion = nn.L1Loss()
-
