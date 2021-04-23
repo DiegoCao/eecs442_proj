@@ -4,12 +4,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision
-<<<<<<< HEAD
 import os 
 from torchsummary import summary
 import evaluation
-=======
->>>>>>> c50dfc516be94e4c9a0a506e2471c3225708370e
 from torch.utils.tensorboard import SummaryWriter
 
 import dataset
@@ -133,7 +130,7 @@ def train():
                 with torch.no_grad():
                     rgb_images_real = utils.lab2rgb(lab_images[:32].cpu())
                     rgb_images_fake = utils.lab2rgb(fake_lab_images[:32].cpu())
-                    accu = evaluation.evaluate_batch(rgv_images_real, rgb_images_fake)
+                    accu = evaluation.evaluate_batch(rgb_images_real, rgb_images_fake)
                     print('The accuracy with theresh %5: ', accu)
                     Running_accu.append(accu)
 
