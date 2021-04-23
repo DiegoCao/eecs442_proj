@@ -28,7 +28,7 @@ with open("params.json", "r") as read_file:
     params = json.load(read_file)
 
 if params["dataset"] == "flower":
-    tensor_transform = transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor()])
+    tensor_transform = transforms.Compose([transforms.Resize((256, 256)), transforms.ToTensor()])
     trainset = torchvision.datasets.ImageFolder(root='./flower_data/train', transform=tensor_transform)
 else:
     ########################################################################
@@ -98,5 +98,9 @@ class CieLABDataset(torch.utils.data.Dataset):
 
 
 cielab_dataset = CieLABDataset()
-cielab_loader = torch.utils.data.DataLoader(cielab_dataset, batch_size=128,
+if params["dataset"] == "flower":
+    cielab_loader = torch.utils.data.DataLoader(cielab_dataset, batch_size=16,
+                                                shuffle=True, num_workers=2)
+else:
+    cielab_loader = torch.utils.data.DataLoader(cielab_dataset, batch_size=128,
                                             shuffle=True, num_workers=2)
