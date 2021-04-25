@@ -12,6 +12,11 @@ import evaluation
 import model
 import utils
 
+import torch
+import torchvision
+import torchvision.transforms as transforms
+
+
 writer_test = SummaryWriter(f"testlog/test")
 writer_real = SummaryWriter(f"testlog/test")
 
@@ -20,6 +25,8 @@ def test():
     G.load_state_dict(torch.load('./model/G.pt'))
 
     batch_size = 128
+    
+    tensor_transform = transforms.ToTensor()
     testset = torchvision.datasets.CIFAR10(root='./testdata', train=False,
                                        download=True, transform=tensor_transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
