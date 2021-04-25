@@ -42,8 +42,8 @@ writer_fake = SummaryWriter(f"logs/fake")
 
 
 def saveModel(model, PATH):
-    if os.path.exists(PATH) == FALSE:
-        os.makedirs(PATH)
+    # if os.path.exists(PATH) == FALSE:
+    #     os.makedirs(PATH)
 
     torch.save(model.state_dict(), PATH)
 
@@ -62,11 +62,15 @@ def train():
     smooth = 0.1
 
     Running_accu = []
+    g_loss_epochs = []
+    d_loss_epochs = []
     # loop over the dataset multiple times.
     for epoch in range(num_of_epochs):
         # the generator and discriminator losses are summed for the entire epoch.
         d_running_loss = 0.0
         g_running_loss = 0.0
+        d_loss_per_epoch = []
+        g_loss_per_epoch = []
         for i, data in enumerate(dataset.cielab_loader):
             lab_images = data
 
@@ -123,11 +127,16 @@ def train():
             g_running_loss += g_loss.item()
             # print(fake_lab_images[3])
             mod_const = 200
+            g_loss_per_epoch.append(d_loss.item())
+            d_loss_per_epoch.append(d_loss.item())
             if i % mod_const == 0:
                 print('[%d, %5d] d_loss: %.5f g_loss: %.5f' % (
-                    epoch + 1, i + 1, d_running_loss / mod_const, g_running_loss / mod_const))
+                    epoch + 1, i + 1, d_running_loss / (i + 1), g_running_loss / (i + 1)))
+                
+                
                 d_running_loss = 0.0
                 g_running_loss = 0.0
+                
                 with torch.no_grad():
                     rgb_images_real = utils.lab2rgb(lab_images[:32].cpu())
                     rgb_images_fake = utils.lab2rgb(fake_lab_images[:32].cpu())
@@ -142,10 +151,17 @@ def train():
                     writer_real.add_image("Real", img_grid_real, global_step=step)
                     writer_fake.add_image("Fake", img_grid_fake, global_step=step)
                 step += 1
+            
+            if i % 389 == 0 and i!= 0 :
+                g_loss_epochs.append(g_loss_per_epoch)
+                d_loss_epochs.append(d_loss_per_epoch)
+                print('saved!')
 
+    writeData(g_loss_epochs, 'g_loss_epochs.txt')
+    writeData(d_loss_epochs, 'd_loss_epochs.txt')
     writeData(Running_accu, 'accu_correct.txt')
-    saveModel(G, './model')
-    saveModel(D, './model')
+    saveModel(G, './model/G.pt')
+    saveModel(D, './model/D.pt')
     pass
 
 
