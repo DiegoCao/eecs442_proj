@@ -21,7 +21,7 @@ def test():
 
     batch_size = 128
     testset = torchvision.datasets.CIFAR10(root='./testdata', train=False,
-                                       download=True, transform=transform)
+                                       download=True, transform=tensor_transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
                                          shuffle=False, num_workers=2)
 
