@@ -2,6 +2,7 @@ from math import log10, sqrt
 import numpy as np
 import torch
 
+
 def preprocess_img(img):
     img = img - img.min()
     img = img / img.max()
@@ -37,6 +38,7 @@ def pixelwise_accuracy_rgb(true_img, fake_img, thresh):
 
     return torch.mean(pred)
 
+
 def evaluate_batch(true_imgs, fake_imgs, type = "pixel_rgb", thresh = 255*0.05):
     """
     calculate the batch and return mean, normally the batch size is
@@ -48,14 +50,6 @@ def evaluate_batch(true_imgs, fake_imgs, type = "pixel_rgb", thresh = 255*0.05):
         accu.append(pixelwise_accuracy_rgb(true_imgs[i], fake_imgs[i], thresh))
 
     return np.mean(accu)
-
-
-
-
-
-
-
-
 
 
 # ----------

@@ -24,8 +24,12 @@ num_of_epochs = params["num_of_epochs"]
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # device = torch.device('cpu')
 
-generator = model.Generator()
-discriminator = model.Discriminator()
+if params["dataset"] == "flower":
+    generator = model.F_Generator()
+    discriminator = model.F_Discriminator()
+else:
+    generator = model.Generator()
+    discriminator = model.Discriminator()
 # summary(generator, input_size = (1, 32, 32))
 # summary(discriminator, input_size = (2, 32, 32))
 G = generator.to(device)
