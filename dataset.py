@@ -39,6 +39,7 @@ else:
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                             download=True, transform=tensor_transform)
 
+
 # classes = ('plane', 'car', 'bbird', 'cat',
 #            'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
