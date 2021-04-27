@@ -19,11 +19,13 @@ import numpy as np
 
 writer_test = SummaryWriter(f"testlog/test")
 writer_real = SummaryWriter(f"testlog/test")
-
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def test():
     G = model.Generator() 
     G.load_state_dict(torch.load('./model/G.pt'))
+    # G = G.to(device)
+    
 
     
     # Test_num = 32
