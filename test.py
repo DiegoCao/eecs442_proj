@@ -15,7 +15,7 @@ import utils
 import torch
 import torchvision
 import torchvision.transforms as transforms
-
+import numpy as np
 
 writer_test = SummaryWriter(f"testlog/test")
 writer_real = SummaryWriter(f"testlog/test")
@@ -26,7 +26,7 @@ def test():
     G.load_state_dict(torch.load('./model/G.pt'))
 
     
-    Test_num = 32
+    # Test_num = 32
     
     # tensor_transform = transforms.ToTensor()
     # testset = torchvision.datasets.CIFAR10(root='./testdata', train=False,
@@ -38,10 +38,13 @@ def test():
     #        'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
     
     itr = 0
+    accus = []
+    psnrs = []
+    ssims = []
     for i, data in enumerate(dataset.cielab_loader):
         itr += 1
-        if itr > Test_num:
-            break
+        # if itr > Test_num:
+        #     break
     
         lab_images = data
         print('step i ', i)
@@ -69,7 +72,13 @@ def test():
             writer_test.add_image("Test", img_grid_test, global_step=i)
             accu, psnr,ssim = evaluation.evaluate_batch_all(fake_test_images[:32].cpu(), lab_images[:32].cpu())
             print('the accu, psnr, and ssim accuracy per batch', accu, ' ', psnr, ' ', ssim)
-            
+            accus.append(accu)
+            psnrs.append(psnr)
+            ssims.append(ssim)
+
+    print('--------------end--------------')
+    print('the accu, psnr, and ssim accuracy total average', np.mean(accus), ' ',np.mean(psnr), ' ', np.mean(ssim))
+
         
 
 if __name__ == "__main__":

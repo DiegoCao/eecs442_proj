@@ -89,12 +89,13 @@ if params["testmode"] == "True":
 if testmode == False:
     for image, label in trainset:
         rgb_images.append(image)
-        print(image.shape)
+
+
 
 if testmode == True:
     for image, label in testset:
         rgb_images.append(image)
-        print(image.shape)
+ 
 
 
 # f1 = np.transpose(rgb_images[2].numpy(), (1, 2, 0))
@@ -154,8 +155,3 @@ if params["dataset"] == "flower":
 else:
     cielab_loader = torch.utils.data.DataLoader(cielab_dataset, batch_size=128,
                                             shuffle=True, num_workers=2)
-
-# test_loader = CieLABDataset()
-
-# if params["testmode"] == "True"
-#     test_loader = 
