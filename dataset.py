@@ -38,6 +38,34 @@ else:
 
     trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                             download=True, transform=tensor_transform)
+    
+
+
+def processImages(imageset):
+    """
+        Given image set, return the testimages
+    """
+    rgb_images = []
+    np_lab_images = []
+    for image, label in imageset:
+        rgb_images.append(image)
+
+    
+    for rgb_image in rgb_images:
+        np_rgb_image = np.transpose(rgb_image.numpy(), (1, 2, 0))
+        # Convert it to LAB
+
+        np_lab_image = cv2.cvtColor(numpy_rgb_image, cv2.COLOR_RGB2LAB)
+        np_lab_images.append(np_lab_image)
+
+    for np_lab_image in np_lab_images:
+        np_lab_image[:, :, 0] *= 255 / 100
+        np_lab_image[:, :, 1] += 128
+        np_lab_image[:, :, 2] += 128
+        np_lab_image /= 255
+        torch_lab_image = torch.from_numpy(np.transpose(numpy_lab_image, (2, 0, 1)))
+        lab_images.append(torch_lab_image)
+
 
 
 # classes = ('plane', 'car', 'bbird', 'cat',
@@ -47,8 +75,27 @@ else:
 # Transform the images to CieLAB color space by the use of OpenCV library.
 rgb_images = []
 numpy_lab_images = []
-for image, label in trainset:
-    rgb_images.append(image)
+
+testmode = False
+if params["testmode"] == "True":
+    testmode = True
+    tensor_transform = transforms.ToTensor()
+    testset = torchvision.datasets.CIFAR10(root='./testdata', train=False,
+                                       download=True, transform=tensor_transform)
+    # testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+    #                                      shuffle=False, num_workers=2)
+
+
+if testmode == False:
+    for image, label in trainset:
+        rgb_images.append(image)
+        print(image.shape)
+
+if testmode == True:
+    for image, label in testset:
+        rgb_images.append(image)
+        print(image.shape)
+
 
 # f1 = np.transpose(rgb_images[2].numpy(), (1, 2, 0))
 # f1 = cv2.cvtColor(f1, cv2.COLOR_RGB2LAB)
@@ -98,6 +145,8 @@ class CieLABDataset(torch.utils.data.Dataset):
         return img
 
 
+
+
 cielab_dataset = CieLABDataset()
 if params["dataset"] == "flower":
     cielab_loader = torch.utils.data.DataLoader(cielab_dataset, batch_size=16,
@@ -105,3 +154,8 @@ if params["dataset"] == "flower":
 else:
     cielab_loader = torch.utils.data.DataLoader(cielab_dataset, batch_size=128,
                                             shuffle=True, num_workers=2)
+
+# test_loader = CieLABDataset()
+
+# if params["testmode"] == "True"
+#     test_loader = 
