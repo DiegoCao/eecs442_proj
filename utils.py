@@ -21,6 +21,9 @@ def downloadImages(whichdata = 'cifar10', data_dir = './data'):
 
     return images 
 
+def torch2numpy(rgb_image):
+    numpy_rgb_image = np.transpose(rgb_image.numpy(), (1, 2, 0))
+    return numpy_rgb_image
 
 def lab2rgb(imgs):
     lab_imgs = imgs

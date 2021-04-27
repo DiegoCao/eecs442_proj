@@ -20,6 +20,7 @@ import torchvision.transforms as transforms
 writer_test = SummaryWriter(f"testlog/test")
 writer_real = SummaryWriter(f"testlog/test")
 
+
 def test():
     G = model.Generator() 
     G.load_state_dict(torch.load('./model/G.pt'))
@@ -66,6 +67,9 @@ def test():
             img_grid_test = torchvision.utils.make_grid(rgb_images_test, normalize=True)
             writer_real.add_image("Real", img_grid_real, global_step=i)
             writer_test.add_image("Test", img_grid_test, global_step=i)
+            accu, psnr,ssim = evaluation.evaluate_batch_all(fake_test_images[:32].cpu(), lab_images[:32].cpu())
+            print('the accu, psnr, and ssim accuracy per batch', accu, ' ', psnr, ' ', ssim)
+            
         
 
 if __name__ == "__main__":
